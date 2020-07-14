@@ -1,0 +1,56 @@
+---
+title: "EDA_Camryn"
+author: "Camryn Blawas"
+date: "7/14/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lvplot)
+PlacementData = read.csv("PlacementData.csv")
+```
+
+## Question 7: Do secondary education percentage and higher secondary education percentage have an effect on job placement ?
+
+```{r, echo=FALSE}
+#Add column for SE Fill
+SE_Data = select(PlacementData, "SE_Grade", "JobStatus")
+SE_Data = mutate(SE_Data, Year = ifelse(is.na(SE_Grade), NA, "SE_Grade"), Grade = SE_Grade)
+SE_Data1 = select(SE_Data, "Grade", "JobStatus", "Year")
+#Add column for HSE Fill
+HSE_Data = select(PlacementData, "HSE_Grade", "JobStatus")
+HSE_Data = mutate(HSE_Data, Year = ifelse(is.na(HSE_Grade), NA, "HSE_Grade"), Grade = HSE_Grade)
+HSE_Data1 = select(HSE_Data, "Grade", "JobStatus", "Year")
+#combine SE Grades and HSE Grades
+All_Grades = rbind(SE_Data1, HSE_Data1)
+#plot
+ggplot(All_Grades)+
+  geom_lv(aes(x=JobStatus, y=Grade, fill=Year))
+```
+
+## Question 8: What is the effect of undergraduate degree type and MBA specialization on salary?
+
+```{r, echo=FALSE}
+#Add column for "Sci&Tech" and "Mkt&Fin"
+SciTechUG_MktFinMBA = select(PlacementData, UG_Specialization, MBA_Specialization, Salary)
+SciTechUG_MktFinMBA = mutate(SciTechUG_MktFinMBA, Special = ifelse(UG_Specialization == "Sci&Tech" & MBA_Specialization == "Mkt&Fin","SciTechUG_MktFinMBA", NA))
+#Add column for "Sci&Tech" and "Mkt&HR"
+SciTechUG_MktHRMBA = select(PlacementData, UG_Specialization, MBA_Specialization, Salary)
+SciTechUG_MktHRMBA = mutate(SciTechUG_MktHRMBA, Special = ifelse(UG_Specialization == "Sci&Tech" & MBA_Specialization == "Mkt&HR","SciTechUG_MktHRMBA", NA))
+#Add column for "Comm&Mgmt" and "Mkt&Fin"
+CommMgmtUG_MktFinMBA = select(PlacementData, UG_Specialization, MBA_Specialization, Salary)
+CommMgmtUG_MktFinMBA = mutate(CommMgmtUG_MktFinMBA, Special = ifelse(UG_Specialization == "Comm&Mgmt" & MBA_Specialization == "Mkt&Fin","CommMgmtUG_MktFinMBA", NA))
+#Add column for "Comm&Mgmt" and "Mkt&HR"
+CommMgmtUG_MktHRMBA = select(PlacementData, UG_Specialization, MBA_Specialization, Salary)
+CommMgmtUG_MktHRMBA = mutate(CommMgmtUG_MktHRMBA, Special = ifelse(UG_Specialization == "Comm&Mgmt" & MBA_Specialization == "Mkt&HR","CommMgmtUG_MktHRMBA", NA))
+#Combine data
+Q8Data= rbind(SciTechUG_MktFinMBA, SciTechUG_MktHRMBA, CommMgmtUG_MktFinMBA, CommMgmtUG_MktHRMBA)
+#Remove NA's from "Special"
+Q8Data1 = na.omit(Q8Data)
+#plot
+ggplot(Q8Data1)+
+  geom_lv(aes(x=Special, y=Salary))+
+  coord_flip()
+```
