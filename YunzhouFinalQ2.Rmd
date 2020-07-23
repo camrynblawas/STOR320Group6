@@ -219,7 +219,13 @@ ggplot(data=prediction, mapping=aes(x=prediction, y=PlaceStatus, color=correctne
   ylab("Actual Values")
 ```
 
-
+model5.res= resid(last.model)
+ggplot(data=prediction, aes(x=PlaceStatus, y= model5.res))+
+  geom_jitter()+
+  geom_hline(yintercept=0)+
+  ggtitle("Residuals Plot of Model 5")+
+  xlab("Actual Values")+
+  ylab("Residuals")
 
 
 
